@@ -1,0 +1,2 @@
+# A Ruby Event Manager#
+
