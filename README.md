@@ -1,2 +1,2 @@
-# A Ruby Event Manager#
+# A Ruby Event Manager #
 
