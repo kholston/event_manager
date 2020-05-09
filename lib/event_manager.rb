@@ -1,7 +1,31 @@
 require 'csv'
+require 'google/apis/civicinfo_v2'
+
+
 
 def clean_zipcode(zipcode)
   zipcode.to_s.rjust(5, '0')[0..4]
+end
+
+def legislators_by_zipcode(zip)
+  civic_info = Google::Apis::CivicinfoV2::CivicInfoService.new
+  civic_info.key = 'AIzaSyClRzDqDh5MsXwnCWi0kOiiBivP6JsSyBw'
+  url = 'www.commoncause.org/take-action/find-elected-officials'
+
+  begin
+    legislators = civic_info.representative_info_by_address(
+      address: zip,
+      levels: 'country',
+      roles: ['legislatorUpperBody', 'legislatorLowerBody'])
+
+    legislators = legislators.officials
+
+    legislators_names = legislators.map(&:name)
+
+    legislators_names.join(', ')
+  rescue
+    "You can find your representatives by visiting #{url}"
+  end
 end
 
 puts 'Event Manager Initialized!'
@@ -14,5 +38,7 @@ contents.each do |row|
 
   zipcode = clean_zipcode(row[:zipcode])
 
-  puts "#{name} #{zipcode}"
+  legislators = legislators_by_zipcode(zipcode)
+
+  puts "#{name} #{zipcode} #{legislators}"
 end
